@@ -10,8 +10,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	"github.com/newrelic/k8s-agents-operator/src/api/v1alpha2"
-	"github.com/newrelic/k8s-agents-operator/src/apm"
+	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/api/v1alpha2"
+	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/apm"
 )
 
 var _ webhook.CustomValidator = (*InstrumentationValidator)(nil)

@@ -36,7 +36,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
-	"github.com/newrelic/k8s-agents-operator/src/api/v1alpha2"
+	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/api/v1alpha2"
 	// +kubebuilder:scaffold:imports
 )
 
