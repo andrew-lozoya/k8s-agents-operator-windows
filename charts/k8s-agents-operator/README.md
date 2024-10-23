@@ -4,7 +4,7 @@
 
 A Helm chart for the Kubernetes Agents Operator
 
-**Homepage:** <https://github.com/newrelic/k8s-agents-operator/blob/main/charts/k8s-agents-operator/README.md>
+**Homepage:** <https://github.com/andrew-lozoya/k8s-agents-operator-windows/blob/main/charts/k8s-agents-operator/README.md>
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ helm repo add k8s-agents-operator https://newrelic.github.io/k8s-agents-operator
 
 ### Instrumentation
 
-Install the [`k8s-agents-operator`](https://github.com/newrelic/k8s-agents-operator) Helm chart:
+Install the [`k8s-agents-operator`](https://github.com/andrew-lozoya/k8s-agents-operator-windows) Helm chart:
 ```shell
 helm upgrade --install k8s-agents-operator k8s-agents-operator/k8s-agents-operator \
   --namespace newrelic \
@@ -219,7 +219,7 @@ If you want to see a list of all available charts and releases, check [index.yam
 
 ## Source Code
 
-* <https://github.com/newrelic/k8s-agents-operator>
+* <https://github.com/andrew-lozoya/k8s-agents-operator-windows>
 
 ## Requirements
 
@@ -246,7 +246,7 @@ If you want to see a list of all available charts and releases, check [index.yam
 | controllerManager.kubeRbacProxy.resources.requests.cpu | string | `"5m"` |  |
 | controllerManager.kubeRbacProxy.resources.requests.memory | string | `"64Mi"` |  |
 | controllerManager.manager.image.pullPolicy | string | `nil` |  |
-| controllerManager.manager.image.repository | string | `"newrelic/k8s-agents-operator"` |  |
+| controllerManager.manager.image.repository | string | `"andrew-lozoya/k8s-agents-operator-windows"` |  |
 | controllerManager.manager.image.tag | string | `nil` |  |
 | controllerManager.manager.leaderElection | object | `{"enabled":true}` | Enable leader election mechanism for protecting against split brain if multiple operator pods/replicas are started |
 | controllerManager.manager.resources.requests.cpu | string | `"100m"` |  |

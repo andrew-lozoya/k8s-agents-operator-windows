@@ -22,7 +22,7 @@ controllerManager:
 
   manager:
     image:
-      repository: newrelic/k8s-agents-operator
+      repository: andrew-lozoya/k8s-agents-operator-windows
       tag:
       pullPolicy:
     resources:

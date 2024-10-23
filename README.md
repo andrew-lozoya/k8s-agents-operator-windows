@@ -1,6 +1,6 @@
 <a href="https://opensource.newrelic.com/oss-category/#community-plus"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Community_Plus.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"><img alt="New Relic Open Source community plus project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Community_Plus.png"></picture></a>
 
-# K8s Agents Operator [![codecov](https://codecov.io/gh/newrelic/k8s-agents-operator/graph/badge.svg?token=YUSEXVY3WF)](https://codecov.io/gh/newrelic/k8s-agents-operator)
+# K8s Agents Operator [![codecov](https://codecov.io/gh/andrew-lozoya/k8s-agents-operator-windows/graph/badge.svg?token=YUSEXVY3WF)](https://codecov.io/gh/andrew-lozoya/k8s-agents-operator-windows)
 
 This project auto-instruments containerized workloads in Kubernetes with New Relic agents.
 
