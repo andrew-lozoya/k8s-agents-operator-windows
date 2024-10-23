@@ -89,7 +89,7 @@ jobs:
       - name: Verify Helm docs are up to date
         run: |
          helm-docs
-         git diff --exit-code -- charts/k8s-agents-operator/README.md
+         git diff --exit-code -- charts/k8s-agents-operator-windows/README.md
 
   unit-tests:
     name: Unit tests
@@ -160,7 +160,7 @@ jobs:
 
       - name: Login to GitHub Package Registry
         if: github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/heads/renovate')
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}

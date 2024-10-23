@@ -24,8 +24,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/newrelic/k8s-agents-operator/src/autodetect"
-	"github.com/newrelic/k8s-agents-operator/src/internal/config"
+	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/autodetect"
+	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/internal/config"
 )
 
 func TestNewConfig(t *testing.T) {
