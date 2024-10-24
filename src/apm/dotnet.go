@@ -36,21 +36,21 @@ const (
 	dotnetInitContainerName             = initContainerName + "-dotnet"
 )
 
-var _ Injector = (*DotnetInjector)(nil)
+var _ Injector = (*DotnetInjector2)(nil)
 
 func init() {
-	DefaultInjectorRegistry.MustRegister(&DotnetInjector{})
+	DefaultInjectorRegistry.MustRegister(&DotnetInjector2{})
 }
 
-type DotnetInjector struct {
+type DotnetInjector2 struct {
 	baseInjector
 }
 
-func (i *DotnetInjector) Language() string {
-	return "dotnet"
+func (i *DotnetInjector2) Language() string {
+	return "dotnet2"
 }
 
-func (i *DotnetInjector) acceptable(inst v1alpha2.Instrumentation, pod corev1.Pod) bool {
+func (i *DotnetInjector2) acceptable(inst v1alpha2.Instrumentation, pod corev1.Pod) bool {
 	if inst.Spec.Agent.Language != i.Language() {
 		return false
 	}
@@ -60,7 +60,7 @@ func (i *DotnetInjector) acceptable(inst v1alpha2.Instrumentation, pod corev1.Po
 	return true
 }
 
-func (i DotnetInjector) Inject(ctx context.Context, inst v1alpha2.Instrumentation, ns corev1.Namespace, pod corev1.Pod) (corev1.Pod, error) {
+func (i DotnetInjector2) Inject(ctx context.Context, inst v1alpha2.Instrumentation, ns corev1.Namespace, pod corev1.Pod) (corev1.Pod, error) {
 	if !i.acceptable(inst, pod) {
 		return pod, nil
 	}

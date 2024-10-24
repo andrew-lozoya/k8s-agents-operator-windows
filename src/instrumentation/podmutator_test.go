@@ -275,8 +275,8 @@ func TestMutatePod(t *testing.T) {
 			if injector == nil {
 				injectorRegistry := apm.NewInjectorRegistry()
 				apmInjectors := []apm.Injector{
-					&apm.DotnetInjector{},
-					// &apm.DotnetWindowsInjector{},
+					&apm.DotnetInjector2{},
+					&apm.DotnetWindowsInjector{},
 					&apm.GoInjector{},
 					&apm.JavaInjector{},
 					&apm.NodejsInjector{},

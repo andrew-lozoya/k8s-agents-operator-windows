@@ -12,11 +12,11 @@ import (
 	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/api/v1alpha2"
 )
 
-func TestDotnetInjector_Language(t *testing.T) {
-	require.Equal(t, "dotnet", (&DotnetInjector{}).Language())
+func TestDotnetInjector2_Language(t *testing.T) {
+	require.Equal(t, "dotnet", (&DotnetInjector2{}).Language())
 }
 
-func TestDotnetInjector_Inject(t *testing.T) {
+func TestDotnetInjector2_Inject(t *testing.T) {
 	vtrue := true
 	tests := []struct {
 		name           string
@@ -92,7 +92,7 @@ func TestDotnetInjector_Inject(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			i := &DotnetInjector{}
+			i := &DotnetInjector2{}
 			actualPod, err := i.Inject(ctx, test.inst, test.ns, test.pod)
 			errStr := ""
 			if err != nil {
