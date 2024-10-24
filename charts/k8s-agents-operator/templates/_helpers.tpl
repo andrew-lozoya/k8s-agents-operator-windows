@@ -10,5 +10,5 @@ Create a node selector for Linux nodes
 */}}
 {{- define "linux.nodeSelector" -}}
 nodeSelector:
-  os: linux  # Change this label according to your needs
+  kubernetes.io/os: linux
 {{- end -}}
