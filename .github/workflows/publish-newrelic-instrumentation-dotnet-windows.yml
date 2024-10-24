@@ -39,9 +39,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
 
-      # Build and push for Windows using native Docker build
-      - name: Build and push (Windows)
-        if: runner.os == 'Windows'
+      - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:latest .
-          docker push ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:latest
+          docker build -t ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:${{ env.VERSION }} \
+            -f src/apm/dotnet_windows/Dockerfile .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:${{ env.VERSION }}
