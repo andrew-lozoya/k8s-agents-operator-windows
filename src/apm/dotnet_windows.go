@@ -144,7 +144,7 @@ func (i DotnetWindowsInjector) Inject(ctx context.Context, inst v1alpha2.Instrum
 		pod.Spec.InitContainers = append(pod.Spec.InitContainers, corev1.Container{
 			Name:    dotnetWindowsInitContainerName,
 			Image:   inst.Spec.Agent.Image,
-			Command: []string{"xcopy", "\\instrumentation \\newrelic-instrumentation /E /I /H /Y"},
+			Command: []string{"xcopy", "\\instrumentation", "\\newrelic-instrumentation", "/E", "/I", "/H", "/Y"},
 			VolumeMounts: []corev1.VolumeMount{{
 				Name:      volumeName,
 				MountPath: "\\newrelic-instrumentation",
