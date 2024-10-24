@@ -12,11 +12,11 @@ import (
 	"github.com/andrew-lozoya/k8s-agents-operator-windows/src/api/v1alpha2"
 )
 
-func TestDotnetInjector_Language(t *testing.T) {
-	require.Equal(t, "dotnet", (&DotnetInjector{}).Language())
+func TestDotnetWindowsInjector_Language(t *testing.T) {
+	require.Equal(t, "dotnet-windows", (&DotnetWindowsInjector{}).Language())
 }
 
-func TestDotnetInjector_Inject(t *testing.T) {
+func TestDotnetWindowsInjector_Inject(t *testing.T) {
 	vtrue := true
 	tests := []struct {
 		name           string
@@ -70,8 +70,12 @@ func TestDotnetInjector_Inject(t *testing.T) {
 					Env: []corev1.EnvVar{
 						{Name: "CORECLR_ENABLE_PROFILING", Value: "1"},
 						{Name: "CORECLR_PROFILER", Value: "{36032161-FFC0-4B61-B559-F6C5D41BAE5A}"},
-						{Name: "CORECLR_PROFILER_PATH", Value: "/newrelic-instrumentation/libNewRelicProfiler.so"},
-						{Name: "CORECLR_NEWRELIC_HOME", Value: "/newrelic-instrumentation"},
+						{Name: "CORECLR_PROFILER_PATH", Value: "\\newrelic-instrumentation\\netcore\\NewRelic.Profiler.dll"},
+						{Name: "CORECLR_NEWRELIC_HOME", Value: "\\newrelic-instrumentation\\netcore"},
+						{Name: "COR_ENABLE_PROFILING", Value: "1"},
+						{Name: "COR_PROFILER", Value: "{71DA0A04-7777-4EC6-9643-7D28B46A8A41}"},
+						{Name: "COR_PROFILER_PATH", Value: "\\newrelic-instrumentation\\netframework\\NewRelic.Profiler.dll"},
+						{Name: "NEWRELIC_HOME", Value: "\\newrelic-instrumentation\\netframework"},
 						{Name: "NEW_RELIC_APP_NAME", Value: "test"},
 						{Name: "NEW_RELIC_LICENSE_KEY", ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: "newrelic-key-secret"}, Key: "new_relic_license_key", Optional: &vtrue}}},
 						{Name: "NEW_RELIC_LABELS", Value: "operator:auto-injection"},
@@ -80,19 +84,19 @@ func TestDotnetInjector_Inject(t *testing.T) {
 					VolumeMounts: []corev1.VolumeMount{{Name: "newrelic-instrumentation", MountPath: "/newrelic-instrumentation"}},
 				}},
 				InitContainers: []corev1.Container{{
-					Name:         "newrelic-instrumentation-dotnet",
-					Command:      []string{"cp", "-a", "/instrumentation/.", "/newrelic-instrumentation/"},
-					VolumeMounts: []corev1.VolumeMount{{Name: "newrelic-instrumentation", MountPath: "/newrelic-instrumentation"}},
+					Name:         "newrelic-instrumentation-dotnet-windows",
+					Command:      []string{"xcopy", "\\instrumentation", "\\newrelic-instrumentation", "/E", "/I", "/H", "/Y"},
+					VolumeMounts: []corev1.VolumeMount{{Name: "newrelic-instrumentation", MountPath: "\\newrelic-instrumentation"}},
 				}},
 				Volumes: []corev1.Volume{{Name: "newrelic-instrumentation", VolumeSource: corev1.VolumeSource{EmptyDir: &corev1.EmptyDirVolumeSource{}}}},
 			}},
-			inst: v1alpha2.Instrumentation{Spec: v1alpha2.InstrumentationSpec{Agent: v1alpha2.Agent{Language: "dotnet"}, LicenseKeySecret: "newrelic-key-secret"}},
+			inst: v1alpha2.Instrumentation{Spec: v1alpha2.InstrumentationSpec{Agent: v1alpha2.Agent{Language: "dotnet-windows"}, LicenseKeySecret: "newrelic-key-secret"}},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ctx := context.Background()
-			i := &DotnetInjector{}
+			i := &DotnetWindowsInjector{}
 			actualPod, err := i.Inject(ctx, test.inst, test.ns, test.pod)
 			errStr := ""
 			if err != nil {
