@@ -14,23 +14,43 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
-    runs-on: windows-latest
+  read-version:
+    name: Read Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Read version
+        id: get_version
+        run: |
+          VERSION=$(cat src/apm/dotnet_windows/version.txt)
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
+
+  build-publish-containers:
+    name: Build and Publish Containers
+    runs-on: ${{ matrix.os }}
+    needs: read-version
+    strategy:
+      max-parallel: 2
+      matrix:
+        os: [windows-2019, windows-2022]
+        include:
+        - os: windows-2019
+          base: ltsc2019
+          file: Dockerfile.windows
+          tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.version }}
+        - os: windows-2022
+          base: ltsc2022
+          file: Dockerfile.windows
+          tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Read version
-        id: version
-        run: echo "VERSION=$(cat src/apm/dotnet_windows/version.txt)" >> $GITHUB_ENV
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init
-          tags: |
-            type=match,pattern=v(.*),group=1,value=v${{ env.VERSION }}
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Login to GitHub Package Registry
         uses: docker/login-action@v3
@@ -41,9 +61,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:${{ env.VERSION }} \
-            -f src/apm/dotnet_windows/Dockerfile .
+          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} --build-arg VERSION=${{ needs.read-version.outputs.version }} -t ${{ matrix.tag }} .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init:${{ env.VERSION }}
+          docker push ${{ matrix.tag }}
