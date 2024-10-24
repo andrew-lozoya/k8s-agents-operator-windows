@@ -32,8 +32,8 @@ const (
 	envDotnetFrameworkWindowsNewrelicHome           = "NEWRELIC_HOME"
 	dotnetFrameworkWindowsClrEnableProfilingEnabled = "1"
 	dotnetFrameworkWindowsClrProfilerID             = "{71DA0A04-7777-4EC6-9643-7D28B46A8A41}"
-	dotnetFrameworkWindowsClrProfilerPath           = "\\newrelic-instrumentation\\netframework\\NewRelic.Profiler.dll"
-	dotnetFrameworkWindowsNewrelicHomePath          = "\\newrelic-instrumentation\\netframework"
+	dotnetFrameworkWindowsClrProfilerPath           = "C:\\newrelic-instrumentation\\netframework\\NewRelic.Profiler.dll"
+	dotnetFrameworkWindowsNewrelicHomePath          = "C:\\newrelic-instrumentation\\netframework"
 
 	//DotNet Core
 	envDotnetWindowsClrEnableProfiling         = "CORECLR_ENABLE_PROFILING"
@@ -42,8 +42,8 @@ const (
 	envDotnetWindowsNewrelicHome               = "CORECLR_NEWRELIC_HOME"
 	dotnetCoreWindowsClrEnableProfilingEnabled = "1"
 	dotnetCoreWindowsClrProfilerID             = "{36032161-FFC0-4B61-B559-F6C5D41BAE5A}"
-	dotnetCoreWindowsClrProfilerPath           = "\\newrelic-instrumentation\\netcore\\NewRelic.Profiler.dll"
-	dotnetCoreWindowsNewrelicHomePath          = "\\newrelic-instrumentation\\netcore"
+	dotnetCoreWindowsClrProfilerPath           = "C:\\newrelic-instrumentation\\netcore\\NewRelic.Profiler.dll"
+	dotnetCoreWindowsNewrelicHomePath          = "C:\\newrelic-instrumentation\\netcore"
 	dotnetWindowsInitContainerName             = initContainerName + "-dotnet-windows"
 )
 
@@ -127,7 +127,7 @@ func (i DotnetWindowsInjector) Inject(ctx context.Context, inst v1alpha2.Instrum
 	if isContainerVolumeMissing(container, volumeName) {
 		container.VolumeMounts = append(container.VolumeMounts, corev1.VolumeMount{
 			Name:      volumeName,
-			MountPath: "\\newrelic-instrumentation",
+			MountPath: "C:\\newrelic-instrumentation",
 		})
 	}
 
@@ -144,10 +144,10 @@ func (i DotnetWindowsInjector) Inject(ctx context.Context, inst v1alpha2.Instrum
 		pod.Spec.InitContainers = append(pod.Spec.InitContainers, corev1.Container{
 			Name:    dotnetWindowsInitContainerName,
 			Image:   inst.Spec.Agent.Image,
-			Command: []string{"xcopy", "\\instrumentation", "\\newrelic-instrumentation", "/E", "/I", "/H", "/Y"},
+			Command: []string{"xcopy", "C:\\instrumentation", "C:\\newrelic-instrumentation", "/E", "/I", "/H", "/Y"},
 			VolumeMounts: []corev1.VolumeMount{{
 				Name:      volumeName,
-				MountPath: "\\newrelic-instrumentation",
+				MountPath: "C:\\newrelic-instrumentation",
 			}},
 		})
 	}

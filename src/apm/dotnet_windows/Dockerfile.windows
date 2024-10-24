@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/windows/nanoserver:${BASE}
 ARG version
 
 # Set the working directory
-WORKDIR \instrumentation
+WORKDIR C:\\instrumentation
 
 # Download and extract the New Relic .NET agent
 RUN curl.exe -L -o newrelic-agent.zip https://download.newrelic.com/dot_net_agent/latest_release/NewRelicDotNetAgent_%version%_x64.zip\
