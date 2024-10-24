@@ -25,6 +25,7 @@ import (
 )
 
 const (
+	//DotNet Framework
 	envDotnetFrameworkWindowsClrEnableProfiling     = "COR_ENABLE_PROFILING"
 	envDotnetFrameworkWindowsClrProfiler            = "COR_PROFILER"
 	envDotnetFrameworkWindowsClrProfilerPath        = "COR_PROFILER_PATH"
@@ -33,24 +34,34 @@ const (
 	dotnetFrameworkWindowsClrProfilerID             = "{71DA0A04-7777-4EC6-9643-7D28B46A8A41}"
 	dotnetFrameworkWindowsClrProfilerPath           = "\\newrelic-instrumentation\\netframework\\NewRelic.Profiler.dll"
 	dotnetFrameworkWindowsNewrelicHomePath          = "\\newrelic-instrumentation\\netframework"
-	dotnetFrameworkWindowsInitContainerName         = initContainerName + "-dotnet-framework-windows"
+
+	//DotNet Core
+	envDotnetWindowsClrEnableProfiling         = "CORECLR_ENABLE_PROFILING"
+	envDotnetWindowsClrProfiler                = "CORECLR_PROFILER"
+	envDotnetWindowsClrProfilerPath            = "CORECLR_PROFILER_PATH"
+	envDotnetWindowsNewrelicHome               = "CORECLR_NEWRELIC_HOME"
+	dotnetCoreWindowsClrEnableProfilingEnabled = "1"
+	dotnetCoreWindowsClrProfilerID             = "{36032161-FFC0-4B61-B559-F6C5D41BAE5A}"
+	dotnetCoreWindowsClrProfilerPath           = "\\newrelic-instrumentation\\netcore\\NewRelic.Profiler.dll"
+	dotnetCoreWindowsNewrelicHomePath          = "\\newrelic-instrumentation\\netcore"
+	dotnetWindowsInitContainerName             = initContainerName + "-dotnet-windows"
 )
 
-var _ Injector = (*DotnetFrameworkWindowsInjector)(nil)
+var _ Injector = (*DotnetWindowsInjector)(nil)
 
 func init() {
-	DefaultInjectorRegistry.MustRegister(&DotnetFrameworkWindowsInjector{})
+	DefaultInjectorRegistry.MustRegister(&DotnetWindowsInjector{})
 }
 
-type DotnetFrameworkWindowsInjector struct {
+type DotnetWindowsInjector struct {
 	baseInjector
 }
 
-func (i *DotnetFrameworkWindowsInjector) Language() string {
-	return "dotnet-framework-windows"
+func (i *DotnetWindowsInjector) Language() string {
+	return "dotnet-windows"
 }
 
-func (i *DotnetFrameworkWindowsInjector) acceptable(inst v1alpha2.Instrumentation, pod corev1.Pod) bool {
+func (i *DotnetWindowsInjector) acceptable(inst v1alpha2.Instrumentation, pod corev1.Pod) bool {
 	if inst.Spec.Agent.Language != i.Language() {
 		return false
 	}
@@ -60,7 +71,7 @@ func (i *DotnetFrameworkWindowsInjector) acceptable(inst v1alpha2.Instrumentatio
 	return true
 }
 
-func (i DotnetFrameworkWindowsInjector) Inject(ctx context.Context, inst v1alpha2.Instrumentation, ns corev1.Namespace, pod corev1.Pod) (corev1.Pod, error) {
+func (i DotnetWindowsInjector) Inject(ctx context.Context, inst v1alpha2.Instrumentation, ns corev1.Namespace, pod corev1.Pod) (corev1.Pod, error) {
 	if !i.acceptable(inst, pod) {
 		return pod, nil
 	}
@@ -71,6 +82,18 @@ func (i DotnetFrameworkWindowsInjector) Inject(ctx context.Context, inst v1alpha
 	firstContainer := 0
 	// caller checks if there is at least one container.
 	container := &pod.Spec.Containers[firstContainer]
+
+	// check if CORECLR_NEWRELIC_HOME env var is already set in the container
+	// if it is already set, then we assume that .NET newrelic-instrumentation is already configured for this container
+	if getIndexOfEnv(container.Env, envDotnetWindowsNewrelicHome) > -1 {
+		return pod, errors.New("CORECLR_NEWRELIC_HOME environment variable is already set in the container")
+	}
+
+	// check if CORECLR_NEWRELIC_HOME env var is already set in the .NET instrumentation spec
+	// if it is already set, then we assume that .NET newrelic-instrumentation is already configured for this container
+	if getIndexOfEnv(inst.Spec.Agent.Env, envDotnetWindowsNewrelicHome) > -1 {
+		return pod, errors.New("CORECLR_NEWRELIC_HOME environment variable is already set in the .NET instrumentation spec")
+	}
 
 	// check if NEWRELIC_HOME env var is already set in the container
 	// if it is already set, then we assume that .NET newrelic-instrumentation is already configured for this container
@@ -92,6 +115,10 @@ func (i DotnetFrameworkWindowsInjector) Inject(ctx context.Context, inst v1alpha
 		}
 	}
 
+	setEnvVar(container, envDotnetWindowsClrEnableProfiling, dotnetCoreWindowsClrEnableProfilingEnabled, false)
+	setEnvVar(container, envDotnetWindowsClrProfiler, dotnetCoreWindowsClrProfilerID, false)
+	setEnvVar(container, envDotnetWindowsClrProfilerPath, dotnetCoreWindowsClrProfilerPath, false)
+	setEnvVar(container, envDotnetWindowsNewrelicHome, dotnetCoreWindowsNewrelicHomePath, false)
 	setEnvVar(container, envDotnetFrameworkWindowsClrEnableProfiling, dotnetFrameworkWindowsClrEnableProfilingEnabled, false)
 	setEnvVar(container, envDotnetFrameworkWindowsClrProfiler, dotnetFrameworkWindowsClrProfilerID, false)
 	setEnvVar(container, envDotnetFrameworkWindowsClrProfilerPath, dotnetFrameworkWindowsClrProfilerPath, false)
@@ -105,7 +132,7 @@ func (i DotnetFrameworkWindowsInjector) Inject(ctx context.Context, inst v1alpha
 	}
 
 	// We just inject Volumes and init containers for the first processed container.
-	if isInitContainerMissing(pod, dotnetFrameworkWindowsInitContainerName) {
+	if isInitContainerMissing(pod, dotnetWindowsInitContainerName) {
 		if isPodVolumeMissing(pod, volumeName) {
 			pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
 				Name: volumeName,
@@ -115,9 +142,9 @@ func (i DotnetFrameworkWindowsInjector) Inject(ctx context.Context, inst v1alpha
 		}
 
 		pod.Spec.InitContainers = append(pod.Spec.InitContainers, corev1.Container{
-			Name:    dotnetFrameworkWindowsInitContainerName,
+			Name:    dotnetWindowsInitContainerName,
 			Image:   inst.Spec.Agent.Image,
-			Command: []string{"powershell", "-Command", "Copy-Item -Path \\instrumentation\\* -Destination \\newrelic-instrumentation -Recurse -Force"},
+			Command: []string{"xcopy", "\\instrumentation \\newrelic-instrumentation /E /I /H /Y"},
 			VolumeMounts: []corev1.VolumeMount{{
 				Name:      volumeName,
 				MountPath: "\\newrelic-instrumentation",

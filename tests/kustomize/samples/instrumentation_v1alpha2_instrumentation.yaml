@@ -8,14 +8,25 @@ spec:
     image: newrelic/newrelic-dotnet-init:latest
 
 ---
-apiVersion: newrelic.com/v1alpha2
-kind: Instrumentation
-metadata:
-  name: newrelic-instrumentation-go
-spec:
-  agent:
-    language: go
-    image: newrelic/newrelic-go-init:latest
+# ---
+# apiVersion: newrelic.com/v1alpha2
+# kind: Instrumentation
+# metadata:
+#   name: newrelic-instrumentation-dotnet-windows
+# spec:
+#   agent:
+#     language: dotnet-windows
+#     image: ghrc.io/andrew-lozoya/newrelic-dotnet-windows-init:latest
+#
+#---
+ apiVersion: newrelic.com/v1alpha2
+ kind: Instrumentation
+ metadata:
+   name: newrelic-instrumentation-go
+ spec:
+   agent:
+     language: go
+     image: newrelic/newrelic-go-init:latest
 
 ---
 apiVersion: newrelic.com/v1alpha2
