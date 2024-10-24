@@ -1,0 +1,61 @@
+name: "Publish Dotnet Newrelic-Instrumentation for Windows"
+
+on:
+  push:
+    paths:
+      - 'src/apm/dotnet_windows/**'
+      - '.github/workflows/publish-newrelic-instrumentation-dotnet-windows.yml'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'src/apm/dotnet_windows/**'
+      - '.github/workflows/publish-newrelic-instrumentation-dotnet-windows.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Read version
+        run: echo "VERSION=$(cat src/apm/dotnet_windows/version.txt)" >> $GITHUB_ENV
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-windows-init
+          tags: |
+            type=match,pattern=v(.*),group=1,value=v${{ env.VERSION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Package Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: src/apm/dotnet_windows
+          push: true
+          build-args: version=${{ env.VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
