@@ -47,10 +47,6 @@ jobs:
         with:
           context: src/apm/dotnet_windows
           push: true
-          build-args: |
-            version=${{ env.VERSION }}
-            isolation=process
+          build-args: version=${{ env.VERSION }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=inline
-          cache-to: type=inline
