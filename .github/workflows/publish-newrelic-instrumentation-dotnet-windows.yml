@@ -41,11 +41,11 @@ jobs:
         include:
         - os: windows-2019
           base: ltsc2019
-          file: Dockerfile.windows
+          file: src/apm/dotnet_windows/Dockerfile.windows
           tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.version }}
         - os: windows-2022
           base: ltsc2022
-          file: Dockerfile.windows
+          file: src/apm/dotnet_windows/Dockerfile.windows
           tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.version }}
 
     steps:
