@@ -22,8 +22,8 @@ controllerManager:
 
   manager:
     image:
-      repository: andrew-lozoya/k8s-agents-operator-windows
-      tag:
+      repository: ghcr.io/andrew-lozoya/k8s-agents-operator-windows
+      tag: edge
       pullPolicy:
     resources:
       requests:
