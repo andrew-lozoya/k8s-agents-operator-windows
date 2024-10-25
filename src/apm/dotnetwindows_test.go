@@ -85,7 +85,7 @@ func TestDotnetWindowsInjector_Inject(t *testing.T) {
 				}},
 				InitContainers: []corev1.Container{{
 					Name:         "newrelic-instrumentation-dotnet-windows",
-					Command:      []string{"xcopy", "C:\\instrumentation", "C:\\newrelic-instrumentation", "/E", "/I", "/H", "/Y"},
+					Command:      []string{"xcopy C:\\instrumentation C:\\newrelic-instrumentation /E /I /H /Y"},
 					VolumeMounts: []corev1.VolumeMount{{Name: "newrelic-instrumentation", MountPath: "C:\\newrelic-instrumentation"}},
 				}},
 				Volumes: []corev1.Volume{{Name: "newrelic-instrumentation", VolumeSource: corev1.VolumeSource{EmptyDir: &corev1.EmptyDirVolumeSource{}}}},
