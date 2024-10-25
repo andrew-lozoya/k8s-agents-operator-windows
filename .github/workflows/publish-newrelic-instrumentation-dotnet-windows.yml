@@ -90,7 +90,7 @@ jobs:
           
           docker manifest create $COMBINED_TAG \
             --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }} \
-            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}}
+            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
 
       - name: Docker Annotate
         run: |
