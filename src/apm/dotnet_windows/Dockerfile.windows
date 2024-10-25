@@ -1,4 +1,4 @@
-# Use the Windows Nano Server for 2019 as the base image
+# Use the Windows Nano Server as the base image
 ARG BASE
 FROM mcr.microsoft.com/windows/nanoserver:${BASE}
 
@@ -7,9 +7,6 @@ ARG VERSION
 
 # Set the working directory
 WORKDIR C:\\instrumentation
-
-# Print the version argument value
-RUN cmd.exe /C echo Using New Relic agent version: %VERSION%
 
 # Download and extract the New Relic .NET agent
 RUN curl.exe -L -o newrelic-agent.zip https://download.newrelic.com/dot_net_agent/latest_release/NewRelicDotNetAgent_%VERSION%_x64.zip\
