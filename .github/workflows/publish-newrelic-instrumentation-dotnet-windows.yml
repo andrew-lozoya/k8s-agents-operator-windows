@@ -78,6 +78,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
 
+      - name: Debug Version
+        run: echo "Version is ${{ needs.read-version.outputs.VERSION }}"
+
       - name: Docker Manifest
         run: |
           COMBINED_TAG=ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ needs.read-version.outputs.VERSION }}
