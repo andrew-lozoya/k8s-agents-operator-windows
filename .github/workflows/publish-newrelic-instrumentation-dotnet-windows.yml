@@ -27,29 +27,26 @@ jobs:
         id: get_version
         run: |
           VERSION=$(cat src/apm/dotnet_windows/version.txt)
-          echo "::set-output name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   build-publish-containers:
-    - name: Debug Version
-      run: echo "Version is ${{ needs.read-version.outputs.VERSION }}"
-      
-    - name: Build and Publish Containers
-      runs-on: ${{ matrix.os }}
-      needs: read-version
-      strategy:
-        max-parallel: 2
-        matrix:
-          os: [windows-2019, windows-2022]
-          include:
-            - os: windows-2019
-              base: ltsc2019
-              file: src/apm/dotnet_windows/Dockerfile.windows
-              tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.VERSION }}
-            - os: windows-2022
-              base: ltsc2022
-              file: src/apm/dotnet_windows/Dockerfile.windows
-              tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.VERSION }}
-
+    name: Build and Publish Containers
+    runs-on: ${{ matrix.os }}
+    needs: read-version
+    strategy:
+      max-parallel: 2
+      matrix:
+        os: [windows-2019, windows-2022]
+        include:
+          - os: windows-2019
+            base: ltsc2019
+            file: src/apm/dotnet_windows/Dockerfile.windows
+            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.VERSION }}
+          - os: windows-2022
+            base: ltsc2022
+            file: src/apm/dotnet_windows/Dockerfile.windows
+            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.VERSION }}
+  
     steps:
       - name: Checkout
         uses: actions/checkout@v3
