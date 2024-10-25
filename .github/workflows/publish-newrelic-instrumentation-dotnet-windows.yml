@@ -71,6 +71,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+        # Can not get the GITHUB_OUTPUT to propigate to this job
       - name: Read version
         id: get_version
         run: |
@@ -94,13 +95,13 @@ jobs:
 
       - name: Docker Annotate
         run: |
-          docker manifest annotate $COMBINED_TAG \
-            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }} \
-            --os windows --arch amd64 --os-version "10.0.17763.6414"
+          docker manifest annotate --os windows --arch amd64 \
+            --os-version "10.0.17763.6414" \
+            $COMBINED_TAG ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }}
           
-          docker manifest annotate $COMBINED_TAG \
-            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }} \
-            --os windows --arch amd64 --os-version "10.0.20348.2762"
+          docker manifest annotate --os windows --arch amd64 \
+            --os-version "10.0.20348.2762" \
+            $COMBINED_TAG ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
 
       - name: Docker Push Manifest
         run: |
