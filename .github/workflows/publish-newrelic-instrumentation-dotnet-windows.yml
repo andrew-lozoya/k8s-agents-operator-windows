@@ -86,10 +86,8 @@ jobs:
           password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
 
       - name: Docker Manifest
-        run: |
-          COMBINED_TAG=ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }}
-          
-          docker manifest create $COMBINED_TAG \
+        run: |          
+          docker manifest create ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }} \
             --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }} \
             --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
 
@@ -97,12 +95,12 @@ jobs:
         run: |
           docker manifest annotate --os windows --arch amd64 \
             --os-version "10.0.17763.6414" \
-            $COMBINED_TAG ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }} ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }}
           
           docker manifest annotate --os windows --arch amd64 \
             --os-version "10.0.20348.2762" \
-            $COMBINED_TAG ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }} ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
 
       - name: Docker Push Manifest
         run: |
-          docker manifest push $COMBINED_TAG
+          docker manifest push ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }}
