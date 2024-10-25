@@ -59,10 +59,44 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and Push Docker image
         run: |
           docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} --build-arg VERSION=${{ needs.read-version.outputs.version }} -t ${{ matrix.tag }} .
-
-      - name: Push Docker image
-        run: |
           docker push ${{ matrix.tag }}
+
+  publish-manifest:
+    name: Publish Manifest
+    runs-on: ubuntu-latest
+    needs: build-publish-containers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Package Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_PUSH_TOKEN }}
+
+      - name: Docker Manifest
+        run: |
+          COMBINED_TAG=ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ needs.read-version.outputs.version }}
+          
+          docker manifest create $COMBINED_TAG \
+            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.version }} \
+            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.version }}
+
+      - name: Docker Annotate
+        run: |
+          docker manifest annotate $COMBINED_TAG \
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.version }} \
+            --os windows --arch amd64 --os-version "10.0.17763.6414"
+          
+          docker manifest annotate $COMBINED_TAG \
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.version }} \
+            --os windows --arch amd64 --os-version "10.0.20348.2762"
+
+      - name: Docker Push Manifest
+        run: |
+          docker manifest push $COMBINED_TAG
