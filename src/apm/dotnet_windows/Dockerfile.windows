@@ -3,15 +3,15 @@ ARG BASE
 FROM mcr.microsoft.com/windows/nanoserver:${BASE}
 
 # Argument to specify the version of the New Relic agent
-ARG version
+ARG VERSION
 
 # Set the working directory
 WORKDIR C:\\instrumentation
 
 # Print the version argument value
-RUN echo "Using New Relic agent version: ${version}"
+RUN cmd.exe /C echo Using New Relic agent version: %VERSION%
 
 # Download and extract the New Relic .NET agent
-RUN curl.exe -L -o newrelic-agent.zip https://download.newrelic.com/dot_net_agent/latest_release/NewRelicDotNetAgent_%version%_x64.zip\
+RUN curl.exe -L -o newrelic-agent.zip https://download.newrelic.com/dot_net_agent/latest_release/NewRelicDotNetAgent_%VERSION%_x64.zip\
     && tar.exe -xzf newrelic-agent.zip\
     && del newrelic-agent.zip
