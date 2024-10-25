@@ -17,6 +17,8 @@ jobs:
   read-version:
     name: Read Version
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,7 +27,7 @@ jobs:
         id: get_version
         run: |
           VERSION=$(cat src/apm/dotnet_windows/version.txt)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=VERSION::$VERSION"
 
   build-publish-containers:
     name: Build and Publish Containers
@@ -39,11 +41,11 @@ jobs:
           - os: windows-2019
             base: ltsc2019
             file: src/apm/dotnet_windows/Dockerfile.windows
-            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }}
+            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.VERSION }}
           - os: windows-2022
             base: ltsc2022
             file: src/apm/dotnet_windows/Dockerfile.windows
-            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
+            tag: ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.VERSION }}
 
     steps:
       - name: Checkout
@@ -58,7 +60,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} --build-arg VERSION=${{ env.VERSION }} -t ${{ matrix.tag }} .
+          docker build -f ${{ matrix.file }} --build-arg BASE=${{ matrix.base }} --build-arg VERSION=${{ needs.read-version.outputs.VERSION }} -t ${{ matrix.tag }} .
           docker push ${{ matrix.tag }}
 
   publish-manifest:
@@ -78,20 +80,20 @@ jobs:
 
       - name: Docker Manifest
         run: |
-          COMBINED_TAG=ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ env.VERSION }}
+          COMBINED_TAG=ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows:${{ needs.read-version.outputs.VERSION }}
           
           docker manifest create $COMBINED_TAG \
-            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }} \
-            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }}
+            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.VERSION }} \
+            --amend ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.VERSION }}
 
       - name: Docker Annotate
         run: |
           docker manifest annotate $COMBINED_TAG \
-            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ env.VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2019-amd64:${{ needs.read-version.outputs.VERSION }} \
             --os windows --arch amd64 --os-version "10.0.17763.6414"
           
           docker manifest annotate $COMBINED_TAG \
-            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ env.VERSION }} \
+            ghcr.io/${{ github.repository_owner }}/k8s-agents-operator-windows/newrelic-dotnet-init-windows-ltsc2022-amd64:${{ needs.read-version.outputs.VERSION }} \
             --os windows --arch amd64 --os-version "10.0.20348.2762"
 
       - name: Docker Push Manifest
