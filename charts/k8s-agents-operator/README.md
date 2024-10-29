@@ -16,7 +16,7 @@ A Helm chart for the Kubernetes Agents Operator
 
 Add the `k8s-agents-operator` Helm chart repository:
 ```shell
-helm repo add k8s-agents-operator https://andrew-lozoya.github.io/k8s-agents-operator-window
+helm repo add k8s-agents-operator https://andrew-lozoya.github.io/k8s-agents-operator-windows
 ```
 
 ### Instrumentation
