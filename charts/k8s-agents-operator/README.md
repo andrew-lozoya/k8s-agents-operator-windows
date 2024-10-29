@@ -16,14 +16,14 @@ A Helm chart for the Kubernetes Agents Operator
 
 Add the `k8s-agents-operator` Helm chart repository:
 ```shell
-helm repo add k8s-agents-operator https://newrelic.github.io/k8s-agents-operator
+helm repo add k8s-agents-operator https://andrew-lozoya.github.io/k8s-agents-operator-window
 ```
 
 ### Instrumentation
 
 Install the [`k8s-agents-operator`](https://github.com/andrew-lozoya/k8s-agents-operator-windows) Helm chart:
 ```shell
-helm upgrade --install k8s-agents-operator k8s-agents-operator/k8s-agents-operator \
+helm upgrade --install k8s-agents-operator k8s-agents-operator-windows/k8s-agents-operator \
   --namespace newrelic \
   --create-namespace \
   --values your-custom-values.yaml
